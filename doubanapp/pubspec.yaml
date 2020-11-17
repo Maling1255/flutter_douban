@@ -34,6 +34,7 @@ dependencies:
   # log日志
   logger: ^0.9.4
   # 网络缓存图片
+  # 这个库实现了图片缓存加载和载入效果（带动画效果）
   cached_network_image: ^2.0.0-rc.1
   # toast 提示
   fluttertoast: 3.0.4
@@ -43,6 +44,9 @@ dependencies:
   webview_flutter: 0.3.3+1
 
   video_player: 0.10.0+2
+
+  # 屏幕属性相关的  https://github.com/OpenFlutter/flutter_screenutil/blob/master/README_CN.md
+  flutter_screenutil: ^3.1.0
 
 dev_dependencies:
   flutter_test:

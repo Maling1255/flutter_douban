@@ -4,8 +4,13 @@ import 'package:doubanapp/constant/constant.dart';
 import 'package:doubanapp/request/API.dart';
 import 'package:doubanapp/request/http_request.dart';
 import 'package:doubanapp/request/simulate_request.dart';
+import 'package:doubanapp/widgets/image/radius_img.dart';
+import 'package:doubanapp/widgets/part/search_text_field_widget.dart';
+import 'package:doubanapp/widgets/part/video_widget.dart';
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
+
+import 'package:logger/logger.dart';
 
 /// 首页 TAB页面 显示动态和推荐TAB
 class HomePage extends StatelessWidget {
@@ -22,20 +27,71 @@ DefaultTabController getHomePageWidget() {
     initialIndex: 1,
     length: _tabsSegmentTitles.length,
 
-    /// 嵌套的scrollview
+    /// 嵌套的scrollview, 将多个滚动的seiver粘合到一起
     child: NestedScrollView(
 
       /// 头部的跟着滚走的builder, 返回数组
       headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-        return <Widget>[];
+        return <Widget>[
+          SliverOverlapAbsorber(
+            handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
+            sliver: SliverAppBar(
+
+              /// pinned设置为true时，当SliverAppBar内容滑出屏幕时，将始终渲染一个固定在顶部的收起状态
+              pinned: true,
+              expandedHeight: 120,
+              primary: true,
+              titleSpacing: 0.0,
+              backgroundColor: Colors.white,
+              /// AppBar的一部分，它可以扩展，折叠，延伸，最常用于SliverAppBar.flexibleSpace字段。即：展开和收紧区域
+              flexibleSpace: FlexibleSpaceBar(
+                /// FlexibleSpaceBar中有一个非常重要的属性就是stretchModes，此参数控制拉伸区域的滚动特性：
+                /// StretchMode.zoomBackground- >背景小部件将展开以填充额外的空间。
+                /// StretchMode.blurBackground- >使用[ImageFilter.blur]效果，背景将模糊。
+                /// StretchMode.fadeTitle- >随着用户过度滚动，标题将消失。
+                // stretchModes: [StretchMode.blurBackground],
+                collapseMode: CollapseMode.pin,
+                background: Container(
+                  color: Colors.green,
+                  alignment: Alignment.center,
+                  // 自定义搜索框
+                  child: SearchTextFieldWidget(
+                    placeholder: '影视作品中你难忘的离别',
+                    margin: EdgeInsets.only(left: 15, right: 15),
+                    onTap: () {
+                      debugPrint('点击搜索🔍');
+                    },
+                  ),
+                ),
+              ),
+
+              /// TabBar 类似segment
+              /// TabBar 是一排水平的标签，可以来回切换
+              bottom: TabBar(
+
+                /// 指示器的长度, tab：和tab一样长，label：和标签label 一样长
+                indicatorSize: TabBarIndicatorSize.label,
+                indicatorColor: Colors.white,
+                labelColor: Colors.white,
+                indicatorPadding: EdgeInsets.only(bottom: 5),
+                labelPadding: EdgeInsets.only(bottom: 8),
+                tabs: _tabsSegmentTitles.map((String title) => Container(
+                  child: Text(title, style: TextStyle(fontSize: 17)),
+                  padding: EdgeInsets.only(bottom: 5.0),
+                )).toList(),
+              ),
+            ),
+          ),
+        ];
       },
+
+      /// 下面的列表
       body: TabBarView(
         children: _tabsSegmentTitles.map((String title) {
           // 包装成SliverContainer
           return SliverContainer(title: title);
         }).toList(),
       ),
-
     ),
   );
 }
@@ -57,7 +113,6 @@ class _SliverContainerState extends State<SliverContainer> {
   @override
   void initState() {
     super.initState();
-
     if (list == null || list.isEmpty) {
         if (_tabsSegmentTitles[0] == widget.title) {
           // 请求动态数据
@@ -80,11 +135,9 @@ class _SliverContainerState extends State<SliverContainer> {
     var result = await _request.get(API.TOP_250);
     var resultList = result['subjects'];
 
-
     list = resultList.map<Subject>((item) => Subject.fromMap(item)).toList();
 
     setState(() {});
-
   }
 
   @override
@@ -106,9 +159,6 @@ class _SliverContainerState extends State<SliverContainer> {
         );
     }
 
-
-    print('.................  ${list.length}');
-
     /// 安全区域
     return SafeArea(
       top: false,
@@ -127,7 +177,9 @@ class _SliverContainerState extends State<SliverContainer> {
             /// 当选项卡视图不在屏幕上时，它允许列表记住它的滚动位置。
             key: PageStorageKey<String>(widget.title),
             slivers: <Widget>[
+              /// TODO: 这里为什么不能写
               SliverOverlapInjector(
+                 // 这是上面的SliverOverlapAbsorber的另一面。
                 handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
               ),
               SliverList(
@@ -149,9 +201,9 @@ class _SliverContainerState extends State<SliverContainer> {
                 ///         childCount: 10,
                 ///       )
                 ///     )
-                delegate: SliverChildBuilderDelegate(
-                        (BuildContext context, int index) => getCommonItem(list, index),
-                    childCount: list.length)),
+                  delegate: SliverChildBuilderDelegate((BuildContext context, int index) {
+                    return _getCommonItem(list, index);
+              }, childCount: list.length)),
             ],
           );
         },
@@ -160,10 +212,10 @@ class _SliverContainerState extends State<SliverContainer> {
   }
 
 
-  double singleLineImgHeight = 180.0;
+  double singleLineImgHeight = 200.0;
   double contentVideoHeight = 350.0;
   /// 列表的普通单个item
-  getCommonItem(List<Subject> items, int index) {
+  _getCommonItem(List<Subject> items, int index) {
 
     Subject item = items[index];
     bool isShowVideo = index == 1 || index == 3;
@@ -171,28 +223,106 @@ class _SliverContainerState extends State<SliverContainer> {
     return Container(
       height: isShowVideo ? contentVideoHeight : singleLineImgHeight,
       color: Colors.white,
+      // 行间距
       margin: const EdgeInsets.only(bottom: 10.0),
-      padding: const EdgeInsets.only(left: Constant.MARGIN_LEFT, right: Constant.MARGIN_RIGHT, top: Constant.MARGIN_RIGHT, bottom: 30.0),
+      padding: const EdgeInsets.only(left: Constant.MARGIN_LEFT, right: Constant.MARGIN_RIGHT, top: Constant.MARGIN_RIGHT, bottom: 10.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Row(
             children: <Widget>[
+              // 圆角
               CircleAvatar(radius: 25.0, backgroundColor: Colors.white, backgroundImage: NetworkImage(item.casts[0].avatars.medium)),
               Padding(padding: const EdgeInsets.only(left: 10.0), child: Text(item.title)),
               Expanded(
-                child: Text('测试文字'),
+                child: GestureDetector(
+                  child: Align(
+                    child: Icon( Icons.more_horiz, color: Colors.grey, size: 18.0),
+                    alignment: Alignment.topRight,
+                  ),
+                  onTap: () {
+                    Logger().i('点击了首页列表的...');
+                  },
+                ),
               ),
             ],
           ),
+          // 中间位置
+          Expanded(
+            child: Padding(
+              padding: EdgeInsets.only(top: 10),
+              child: Container(child: isShowVideo ? _getContentVideo(index) : _getContentItemCenterImage(item)),
+            ),
+          ),
+          // 底部功能键
+
+        Padding(
+              padding: const EdgeInsets.only(left: 15.0, right: 15.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  GestureDetector(
+                    onTap: () {
+                      Logger().i('点击了首页列表的👍 $index');
+                    },
+                    child: Image.asset(Constant.ASSETS_IMG + 'ic_vote.png', width: 25.0, height: 25.0),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      Logger().i('点击了首页列表的评论🏃 $index');
+                    },
+                    child: Image.asset(Constant.ASSETS_IMG + 'ic_notification_tv_calendar_comments.png', width: 20.0, height: 20.0),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      Logger().i('点击了首页列表的转发👌 $index');
+                    },
+                    child: Image.asset(Constant.ASSETS_IMG + 'ic_status_detail_reshare_icon.png', width: 25.0, height: 25.0),
+                  ),
+                ],
+              ),
+            ),
         ],
       ),
     );
   }
 
+  _getContentVideo(int index) {
+    /// mounted 是 bool 类型，表示当前 State 是否加载到树⾥。
+    /// 常用于判断页面是否释放。
+    if (!mounted) {
+      return Container();
+    }
+    return Container(
+      child: VideoWidget(
+        index == 1 ? Constant.URL_MP4_DEMO_0 : Constant.URL_MP4_DEMO_1,
+        isShowProgressBar: false,
+      ),
+    );
+  }
+
+  _getContentItemCenterImage(Subject item) {
+    return Row(
+      /// 环绕模式
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: <Widget>[
+        Expanded(
+          child: RadiusImg.get(item.images.large, null, shape:RoundedRectangleBorder(
+            borderRadius: BorderRadius.only(topLeft: Radius.circular(5.0), bottomLeft: Radius.circular(5.0)),
+          )),
+        ),
+        Expanded(
+          child: RadiusImg.get(item.casts[1].avatars.medium, null, radius: 0.0),
+        ),
+        Expanded(
+          child: RadiusImg.get(item.casts[2].avatars.medium, null, shape:RoundedRectangleBorder(
+            borderRadius: BorderRadius.only(topRight: Radius.circular(5.0), bottomRight: Radius.circular(5.0)),
+          )),
+        ),
+      ],
+    );
+  }
 }
-
-
 
 
 /// 动态TAB
