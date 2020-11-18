@@ -14,8 +14,6 @@ class ContainerPage extends StatefulWidget {
   _ContainerPageState createState() => _ContainerPageState();
 }
 
-
-
 class _ContainerPageState extends State<ContainerPage> {
 
   // 定义4个页面的数组

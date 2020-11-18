@@ -9,6 +9,7 @@ import 'package:doubanapp/widgets/part/search_text_field_widget.dart';
 import 'package:doubanapp/widgets/part/video_widget.dart';
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
+import 'package:doubanapp/pages/home/home_app_bar.dart' as myApp;
 
 import 'package:logger/logger.dart';
 
@@ -24,9 +25,8 @@ class HomePage extends StatelessWidget {
 var _tabsSegmentTitles = ['动态', '推荐'];
 DefaultTabController getHomePageWidget() {
   return DefaultTabController(
-    initialIndex: 1,
+    initialIndex: 1,  // 默认选中推荐
     length: _tabsSegmentTitles.length,
-
     /// 嵌套的scrollview, 将多个滚动的seiver粘合到一起
     child: NestedScrollView(
 
@@ -35,11 +35,12 @@ DefaultTabController getHomePageWidget() {
         return <Widget>[
           SliverOverlapAbsorber(
             handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
-            sliver: SliverAppBar(
+            /// 这里使用的重写自定义的SliverAppBar
+            sliver: myApp.SliverAppBar(
 
               /// pinned设置为true时，当SliverAppBar内容滑出屏幕时，将始终渲染一个固定在顶部的收起状态
               pinned: true,
-              expandedHeight: 120,
+              expandedHeight: 140,
               primary: true,
               titleSpacing: 0.0,
               backgroundColor: Colors.white,
@@ -49,11 +50,11 @@ DefaultTabController getHomePageWidget() {
                 /// StretchMode.zoomBackground- >背景小部件将展开以填充额外的空间。
                 /// StretchMode.blurBackground- >使用[ImageFilter.blur]效果，背景将模糊。
                 /// StretchMode.fadeTitle- >随着用户过度滚动，标题将消失。
-                // stretchModes: [StretchMode.blurBackground],
+                stretchModes: [StretchMode.blurBackground],
                 collapseMode: CollapseMode.pin,
                 background: Container(
                   color: Colors.green,
-                  alignment: Alignment.center,
+                  alignment: Alignment(0, -0.15),
                   // 自定义搜索框
                   child: SearchTextFieldWidget(
                     placeholder: '影视作品中你难忘的离别',
@@ -64,9 +65,10 @@ DefaultTabController getHomePageWidget() {
                   ),
                 ),
               ),
-
+              bottomTextString: _tabsSegmentTitles,
               /// TabBar 类似segment
               /// TabBar 是一排水平的标签，可以来回切换
+              /// 这里自定义了 重写了，，在HomeTabBar中重写了
               bottom: TabBar(
 
                 /// 指示器的长度, tab：和tab一样长，label：和标签label 一样长
@@ -82,6 +84,17 @@ DefaultTabController getHomePageWidget() {
               ),
             ),
           ),
+
+          // SliverFixedExtentList(
+          //   itemExtent: 120.0,
+          //   delegate: SliverChildListDelegate(
+          //      <Widget>[
+          //        Text('1111111111111'),
+          //        Text('2222222222222'),
+          //        Text('3333333333333'),
+          //      ],
+          //     ),
+          //   ),
         ];
       },
 

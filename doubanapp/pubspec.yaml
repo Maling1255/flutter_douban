@@ -46,7 +46,7 @@ dependencies:
   video_player: 0.10.0+2
 
   # 屏幕属性相关的  https://github.com/OpenFlutter/flutter_screenutil/blob/master/README_CN.md
-  flutter_screenutil: ^3.1.0
+#  flutter_screenutil: ^3.1.0
 
 dev_dependencies:
   flutter_test:
