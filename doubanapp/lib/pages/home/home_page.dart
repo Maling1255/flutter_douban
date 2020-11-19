@@ -27,7 +27,8 @@ DefaultTabController getHomePageWidget() {
   return DefaultTabController(
     initialIndex: 1,  // 默认选中推荐
     length: _tabsSegmentTitles.length,
-    /// 嵌套的scrollview, 将多个滚动的seiver粘合到一起
+    /// 可以在其内部嵌套其他滚动视图的滚动视图，其滚动位置是固有链接的
+    /// 就是 SliverAppBar/TabBarView 可以上滑滑动走， 下拉固定到在顶部效果
     child: NestedScrollView(
 
       /// 头部的跟着滚走的builder, 返回数组
@@ -57,7 +58,7 @@ DefaultTabController getHomePageWidget() {
                   alignment: Alignment(0, -0.15),
                   // 自定义搜索框
                   child: SearchTextFieldWidget(
-                    placeholder: '影视作品中你难忘的离别',
+                    hintText: '影视作品中你难忘的离别',
                     margin: EdgeInsets.only(left: 15, right: 15),
                     onTap: () {
                       debugPrint('点击搜索🔍');

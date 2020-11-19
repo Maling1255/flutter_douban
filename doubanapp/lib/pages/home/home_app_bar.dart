@@ -663,6 +663,9 @@ class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
     //    1   |    1     |        1       ||  fade
     final double toolbarOpacity = !pinned || (floating && bottom != null) ? ((visibleMainHeight - _bottomHeight) / kToolbarHeight).clamp(0.0, 1.0) : 1.0;
 
+    // 差值的范围
+    // maxExtent 表示header完全展开时的高度， minExtent 表示header在收起时的最小高度
+    // 如果将 minHeight 和 maxHeight 的值设置为相同时，header就不会收缩了，这样的Header跟我们平常理解的Header更像。
     final double deltaExtent = maxExtent - minExtent;
 
     // 0.0 -> Expanded
@@ -670,12 +673,18 @@ class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
 
     final double t = (1.0 - (math.max(minExtent, maxExtent - shrinkOffset) - minExtent) / deltaExtent).clamp(0.0, 1.0);
 
+    /// lerp 颜色都是线性渐变的
+    /// a和b都是颜色，t是夹在0到1之间的，当t为0时返回a，当t为1时返回b
+    ///
+    /// 也就是在滚动事件中，计算出 t ，根据 t 改变图标颜色就可以实现上面的效果了。
+    /// https://cloud.tencent.com/developer/article/1723875
     Color color = Color.lerp(Colors.white, Colors.green, t);
 
 //    List<>getTabBarText(bottom);
     bottom = HomeTabBar(
       translate: t,
       tabBar: TabBar(
+        /// 指示器的长度, tab：和tab一样长，label：和标签label 一样长
         indicatorSize: TabBarIndicatorSize.label,
         indicatorWeight: 2.0,
         indicatorColor: color,
@@ -1203,7 +1212,7 @@ getWidget() {
                 background: Container(
                   color: Colors.green,
                   child: SearchTextFieldWidget(
-                    placeholder: 'fjeow',
+                    hintText: 'fjeow',
                     margin: const EdgeInsets.only(left: 15.0, right: 15.0),
                   ),
                   alignment: Alignment(0.0, -0.5),

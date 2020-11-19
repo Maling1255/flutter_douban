@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 class SearchTextFieldWidget extends StatelessWidget {
 
   // 占位文本
-  final String placeholder;
+  final String hintText;
   // 搜索点击
   final VoidCallback onTap;
   // 文本改变回调
@@ -17,7 +17,7 @@ class SearchTextFieldWidget extends StatelessWidget {
 
   SearchTextFieldWidget({
     Key key,
-    this.placeholder,
+    this.hintText,
     this.onTap,
     this.onSubmitted,
     this.margin,
@@ -48,7 +48,7 @@ class SearchTextFieldWidget extends StatelessWidget {
           /// 关闭底部输入指示线
           border: InputBorder.none,
           /// 占位暗文字
-          hintText: placeholder,
+          hintText: hintText,
           hintStyle: TextStyle(fontSize: 17, color: Color.fromARGB(255, 192, 191, 191)),
           // 前缀图标，搜索🔍
           prefixIcon: Icon(Icons.search, size: 25, color: Color.fromARGB(255, 128, 128, 128)),

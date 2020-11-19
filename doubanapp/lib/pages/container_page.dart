@@ -1,4 +1,5 @@
 import 'package:doubanapp/pages/home/home_page.dart';
+import 'package:doubanapp/pages/movie/book_audio_video_page.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 
@@ -34,7 +35,7 @@ class _ContainerPageState extends State<ContainerPage> {
     super.initState();
     
     if (pages == null) {
-        pages = [HomePage(), HomePage(), HomePage(), HomePage(), HomePage()]; 
+        pages = [HomePage(), BookAudioVideoPage(), HomePage(), HomePage(), HomePage()];
     }
 
     if (bottomNavigationBarItemList == null) {
@@ -53,7 +54,7 @@ class _ContainerPageState extends State<ContainerPage> {
   Widget _getPagesWidget(int index) {
     return Offstage(
       offstage: _selectIndex != index,  // false 显示， true 隐藏
-      child: TickerMode(  /// 创建一个启用或禁用股票行情的窗口小部件
+      child: TickerMode(  /// 创建一个启用或禁用窗口部件
         enabled: _selectIndex == index,
         child: pages[index],
       ),
