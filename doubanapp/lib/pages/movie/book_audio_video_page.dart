@@ -39,8 +39,9 @@ class _BookAudioVideoPageState extends State<BookAudioVideoPage> with SingleTick
 
   @override
   Widget build(BuildContext context) {
+    /// TODO: 整个container
     return Container(
-      color: Colors.green,
+      color: Colors.white70,
       child: SafeArea(
         /// 横向滚动的tabController
         child: DefaultTabController(
@@ -53,13 +54,15 @@ class _BookAudioVideoPageState extends State<BookAudioVideoPage> with SingleTick
   }
 }
 
-// 包装成nest滚动
+// 包装成nested滚动
 Widget _getNestedScrollView(Widget tabbar) {
   String hintText = '用一部电影来形容你的2020';
   /// 可以在其内部嵌套其他滚动视图的滚动视图，其滚动位置是固有链接的
   /// http://laomengit.com/flutter/widgets/NestedScrollView.html#与tabbar配合使用
   return NestedScrollView(
     headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+
+      /// 这里返回的数组 就是上部分的 'title' widget
       return <Widget>[
         /// 将普通widget包装sliver
         SliverToBoxAdapter(
@@ -90,7 +93,7 @@ Widget _getNestedScrollView(Widget tabbar) {
       ];
     },
 
-      // 底下的tabController 包装下_tabController
+      // 底下的FlutterTabBarView 包装下_tabController
     body: FlutterTabBarView(
          tabController: _tabController
   ));

@@ -1,4 +1,5 @@
 
+import 'package:doubanapp/pages/movie/movie_page.dart';
 import 'package:flutter/material.dart';
 
 class FlutterTabBarView extends StatelessWidget {
@@ -10,7 +11,7 @@ class FlutterTabBarView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var viewList = [
-      Page2(),
+      MoviePage(),
       Page4(),
       Page5(),
       Page1(),
