@@ -45,6 +45,12 @@ dependencies:
 
   video_player: 0.10.0+2
 
+  # 轻量级数据存储， 偏好设置类似于 NSUserDefaults  基本用法教程： https://www.cnblogs.com/xq9527/p/13953431.html
+  shared_preferences: 0.5.3+2
+
+  #从图像中提取突出颜色的一种颤振包，通常用于为用户界面查找颜色。
+  #  palette_generator: 0.1.1
+
   # 屏幕属性相关的  https://github.com/OpenFlutter/flutter_screenutil/blob/master/README_CN.md
 #  flutter_screenutil: ^3.1.0
 

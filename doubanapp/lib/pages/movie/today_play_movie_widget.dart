@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 
+/// 今日播放，
 class TodayPlayMovieWidget extends StatelessWidget {
 
   final urls;
@@ -29,7 +30,7 @@ class TodayPlayMovieWidget extends StatelessWidget {
           width: double.infinity,
           decoration: BoxDecoration(
             color: backgroundColor == null ? Color.fromARGB(255, 47, 22, 74) : backgroundColor,
-            /// 形状：矩形 和圆形
+            /// 形状：矩形 和 圆角
             shape: BoxShape.rectangle,
             borderRadius: BorderRadius.circular(4.0),
           ),

@@ -15,7 +15,7 @@ class HttpRequest {
           var respose = await request.close();
           var resposeBody = await respose.transform(Convert.utf8.decoder).join();
 
-          /// 转变json到字典
+          /// json转到字典
           Map data = Convert.jsonDecode(resposeBody);
           callBack(data);
     } on Exception catch(e) {
@@ -34,7 +34,7 @@ class HttpRequest {
 
      print('[uri=$baseUrl' + '$url]  [statusCode=$statusCode]  [response=$body]');
 
-     /// 转字典/数组
+     /// json转字典/数组
      var result = Convert.jsonDecode(body);
      return result;
     } on Exception catch(e) {
@@ -64,7 +64,7 @@ class HttpRequest {
      String responseBody = response.body;
 
      print('[url=$url][statusCode=$statusCode][response=$responseBody]');
-     /// 转字典/数组
+     /// json转字典/数组
      var result = Convert.jsonDecode(responseBody);
      return result;
     } on Exception catch(e) {

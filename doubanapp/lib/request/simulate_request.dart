@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'package:doubanapp/request/API.dart';
 import 'package:flutter/services.dart' show rootBundle;
-import 'dart:convert';
+import 'dart:convert' as Convert;
 
-/// 模拟请求
+/// 模拟请求， 使用的是本地json 文件
 class SimulateRequest {
   // GET请求
   Future<dynamic> get(String action, {Map params}) async {
@@ -20,7 +20,8 @@ class SimulateRequest {
     /// 模拟请求， 这里加载的本地json, 需要在pubspec.yaml中配置路径
     var resposeStr = await rootBundle.loadString('simulate/$action.json');
     /// json转字典
-    var resposeJson = json.decode(resposeStr);
+    var resposeJson = Convert.jsonDecode(resposeStr);
+
     return resposeJson;
   }
 

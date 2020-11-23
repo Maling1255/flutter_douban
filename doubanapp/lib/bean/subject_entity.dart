@@ -1,15 +1,15 @@
-class SubjectEctity {
+class SubjectEntity {
 
   Subject subject;
   // 排名
   var rank;
-  // 三角洲？
+  // 热度的正负值， 如果为正 热度上升， 如果为负 热度下降
   var delta;
 
   /// 命名构造函数
-  SubjectEctity.fromMap(Map<String, dynamic> map) {
+  SubjectEntity.fromMap(Map<String, dynamic> map) {
     rank = map['rank'];
-    delta = map['delat'];
+    delta = map['delta'];
     var subjectMap = map['subject'];
     subject = Subject.fromMap(subjectMap);
   }
