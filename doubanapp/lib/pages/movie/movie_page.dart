@@ -1,11 +1,14 @@
 
 import 'package:doubanapp/bean/movie_top_item_bean.dart';
 import 'package:doubanapp/bean/subject_entity.dart';
+import 'package:doubanapp/constant/color_constant.dart';
 import 'package:doubanapp/pages/movie/movie_hotsoon_tabbar.dart';
 import 'package:doubanapp/pages/movie/movie_title_wiget.dart';
 import 'package:doubanapp/pages/movie/today_play_movie_widget.dart';
 import 'package:doubanapp/repository/movie_repository.dary.dart';
+import 'package:doubanapp/widgets/part/loading_widget.dart';
 import 'package:flutter/material.dart';
+import 'dart:math' as math;
 
 class MoviePage extends StatefulWidget {
 
@@ -18,11 +21,13 @@ class MoviePage extends StatefulWidget {
 ///  AutomaticKeepAliveClientMixin 保存状态
 ///  在切换页面时，经常会刷新页面，为了避免initState方法重复调用使用AutomaticKeepAliveClientMixin； 1. with  2. 重写wantKeepAlive 3. super.build(context);
 ///
-/// 三种方式实现页面切换后保持原页面状态  https://blog.csdn.net/jielundewode/article/details/94545743?utm_medium=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromMachineLearnPai2-1.control&depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromMachineLearnPai2-1.control
+/// 四种方式实现页面切换后保持原页面状态  https://blog.csdn.net/jielundewode/article/details/94545743?utm_medium=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromMachineLearnPai2-1.control&depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromMachineLearnPai2-1.control
 /// ① ：使用IndexedStack实现；； IndexedStack继承自Stack，它的作用是显示第index个child，其它child在页面上是不可见的，但所有child的状态都被保持
 /// ② ：使用Offstage实现， 通过一个参数来控制child是否显示，所以我们同样可以组合使用Offstage来实现该需求，其实现原理与IndexedStack类似：
 /// ③ ：AutomaticKeepAliveClientMixin 官方推荐  保存页面状态， 在第一次加载的时候才会调用
+/// ④ ：使用存储状态的key  PageStorageKey  https://blog.csdn.net/vitaviva/article/details/105313672   ;;
 /// ① 和 ② 一开始就要把所有的页面都加在出来， 性能上没有③好
+/// ③ 和 ④ 的比较：：：： https://blog.csdn.net/zhumj_zhumj/article/details/102700305?utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromBaidu-1.control&depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromBaidu-1.control
 class _MoviePageState extends State<MoviePage> with AutomaticKeepAliveClientMixin {
 
   // 标题
@@ -68,9 +73,13 @@ class _MoviePageState extends State<MoviePage> with AutomaticKeepAliveClientMixi
       child: TitleWidget(),
     );
 
-    // TODO: 这里开始🔥这里开始🔥这里开始🔥这里开始🔥这里开始🔥
+    // 热榜 & 即将上映 tabbar
     hotSoonTabbar = HotSoonTabbar(
-
+      onTapCallBack: (index) {
+        setState(() {
+          selectIndex = index;
+        });
+      },
     );
 
     hotSoonTabBarPadding = Padding(
@@ -82,7 +91,7 @@ class _MoviePageState extends State<MoviePage> with AutomaticKeepAliveClientMixi
   }
 
   MovieRepository repository = MovieRepository();
-  bool loading = true;
+  bool isLoading = true;  // 正在加载
 
   void requestAPI() async {
     Future(() => repository.requestAPI()).then((value) {
@@ -103,7 +112,7 @@ class _MoviePageState extends State<MoviePage> with AutomaticKeepAliveClientMixi
       hotSoonTabbar.setCount(hotShowBeans);
       hotSoonTabbar.setComingSoon(comingSoonBeans);
       setState(() {
-        loading = false;
+        isLoading = false;   // 加载完成
       });
     });
   }
@@ -113,19 +122,22 @@ class _MoviePageState extends State<MoviePage> with AutomaticKeepAliveClientMixi
     super.build(context);
 
     if (itemWidth == null || imgSize == null) {
-        var screenWidth = MediaQuery.of(context).size.width;
-        imgSize = screenWidth / 5 * 3; // 占屏幕的3/5宽度
-        itemWidth = (screenWidth - 30.0 - 20.0) / 3;
-        hotChildAspectRatio = (377.0 / 674.0);
-        comingSoonChildAspectRatio = (377.0 / 742.0);
+      var screenWidth = MediaQuery.of(context).size.width;
+      imgSize = screenWidth / 5 * 3; // 占屏幕的3/5宽度
+      itemWidth = (screenWidth - 30.0 - 20.0) / 3;
+      hotChildAspectRatio = (377.0 / 674.0);
+      comingSoonChildAspectRatio = (377.0 / 742.0);
     }
     return Stack(
       children: <Widget>[
         _containerBody(),
+        Offstage(  /// 记载lodding  Offstage 控制显示 & 隐藏
+          child: LoadingWidget.getLoading(backgroundColor: Colors.transparent, loadingBackgroundColor: Colors.white),
+          offstage: !isLoading,
+        ),
       ],
     );
   }
-
 
   Widget _containerBody() {
     return Padding(
@@ -142,16 +154,25 @@ class _MoviePageState extends State<MoviePage> with AutomaticKeepAliveClientMixi
         /// 是否根据子widget的总长度来设置ListView的长度
         shrinkWrap: true,
         slivers: <Widget>[
-          // 包装sliver
+          // 包装sliver, 找电影， 豆瓣榜单， 豆瓣菜， 豆瓣片单
           SliverToBoxAdapter(child: titleWidget),
+          // 今日播放
           SliverToBoxAdapter(
             child: Padding(
               padding: EdgeInsets.only(top: 22.0),
               child: TodayPlayMovieWidget(todayUrls, backgroundColor: todayPlayBackgroundColor),
             ),),
+          // 热映 即将上映 tabbar
           SliverToBoxAdapter(
             child: hotSoonTabBarPadding,
           ),
+          /// grid 网格的
+          SliverGrid(delegate: SliverChildBuilderDelegate((BuildContext context, int index){
+
+              return null;
+            }, childCount: math.min(5, 6)),
+          ),
+
         ],
       ),
     );

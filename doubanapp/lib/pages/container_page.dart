@@ -20,7 +20,7 @@ class _ContainerPageState extends State<ContainerPage> {
   // 定义4个页面的数组
   List<Widget> pages;
   List<BottomNavigationBarItem> bottomNavigationBarItemList;
-  int _selectIndex = 0;  // 默认选中第一个
+  int _bottomBarSelectIndex = 0;  // 默认选中第一个
   final defaultItemColor = Color.fromARGB(255, 125, 125, 125);
   final items =  [
     _Item('首页', 'assets/images/ic_tab_home_active.png', 'assets/images/ic_tab_home_normal.png'),
@@ -35,7 +35,13 @@ class _ContainerPageState extends State<ContainerPage> {
     super.initState();
     
     if (pages == null) {
-        pages = [HomePage(), BookAudioVideoPage(), HomePage(), HomePage(), HomePage()];
+        pages = [HomePage(), BookAudioVideoPage(), Stack(
+          children: <Widget>[
+            Container(
+              color: Colors.blue,
+            ),
+          ],
+        ), HomePage(), HomePage()];
     }
 
     if (bottomNavigationBarItemList == null) {
@@ -50,12 +56,12 @@ class _ContainerPageState extends State<ContainerPage> {
   }
 
   // 根据index获取对应的page
-  /// Stack（层叠布局）+Offstage组合,解决状态被重置的问题
+  /// Stack（层叠布局）+ Offstage组合,解决状态被重置的问题
   Widget _getPagesWidget(int index) {
     return Offstage(
-      offstage: _selectIndex != index,  // false 显示， true 隐藏
+      offstage: _bottomBarSelectIndex != index,  // false 显示， true 隐藏
       child: TickerMode(  /// 创建一个启用或禁用窗口部件
-        enabled: _selectIndex == index,
+        enabled: _bottomBarSelectIndex == index,
         child: pages[index],
       ),
     );
@@ -86,13 +92,13 @@ class _ContainerPageState extends State<ContainerPage> {
         onTap: (int index) {
           /// 这里根据点击的index来显示，非index的page都要隐藏
           setState(() {
-            _selectIndex = index;
+            _bottomBarSelectIndex = index;
           });
         },
         // 图片大小
         iconSize: 24.0,
         // 当前选中的index
-        currentIndex: _selectIndex,
+        currentIndex: _bottomBarSelectIndex,
         /// 选中后，底部BottomNavigationBar内容的颜色(选中时，默认为主题色)
         /// （仅当type: BottomNavigationBarType.fixed,时生效）
         fixedColor: Color.fromARGB(255, 0, 188, 96),

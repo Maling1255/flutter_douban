@@ -169,7 +169,7 @@ class _SliverContainerState extends State<SliverContainer> {
     }
     if (list == null || list.length ==0) {
         return Center(
-          child: Text('暂无数据', style: TextStyle(fontSize: 18, color: Colors.black54)),
+          child: Text('正在加载...', style: TextStyle(fontSize: 18, color: Colors.black54)),
         );
     }
 
@@ -189,11 +189,26 @@ class _SliverContainerState extends State<SliverContainer> {
             /// 如果“controller”属性被设置，那么这个滚动视图将不会与NestedScrollView关联。
             /// PageStorageKey应该是这个ScrollView唯一的;
             /// 当选项卡视图不在屏幕上时，它允许列表记住它的滚动位置。
+            ///
+            /// https://cloud.tencent.com/developer/article/1461395
+            ///
+            /// 记录每个 tabbarpageView 滚动的偏移量, 【🔥保存页面的状态】
+            ///
+            ///  AutomaticKeepAliveClientMixin 保存状态
+            ///  在切换页面时，经常会刷新页面，为了避免initState方法重复调用使用AutomaticKeepAliveClientMixin； 1. with  2. 重写wantKeepAlive 3. super.build(context);
+            ///
+            /// 四种方式实现页面切换后保持原页面状态  https://blog.csdn.net/jielundewode/article/details/94545743?utm_medium=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromMachineLearnPai2-1.control&depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromMachineLearnPai2-1.control
+            /// ① ：使用IndexedStack实现；； IndexedStack继承自Stack，它的作用是显示第index个child，其它child在页面上是不可见的，但所有child的状态都被保持
+            /// ② ：使用Offstage实现， 通过一个参数来控制child是否显示，所以我们同样可以组合使用Offstage来实现该需求，其实现原理与IndexedStack类似：
+            /// ③ ：AutomaticKeepAliveClientMixin 官方推荐  保存页面状态， 在第一次加载的时候才会调用
+            /// ④ ：使用存储状态的key  PageStorageKey  https://blog.csdn.net/vitaviva/article/details/105313672   ;;
+            /// ① 和 ② 一开始就要把所有的页面都加在出来， 性能上没有③好
+            /// ③ 和 ④ 的比较：：：： https://blog.csdn.net/zhumj_zhumj/article/details/102700305?utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromBaidu-1.control&depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromBaidu-1.control
             key: PageStorageKey<String>(widget.title),
             slivers: <Widget>[
               /// TODO: 这里为什么不能写
               SliverOverlapInjector(
-                 // 这是上面的SliverOverlapAbsorber的另一面。
+                 /// 这是上面的SliverOverlapAbsorber的另一面。
                 handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
               ),
               SliverList(

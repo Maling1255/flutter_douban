@@ -18,6 +18,7 @@ class FlutterTabBarView extends StatelessWidget {
       Page1(),
       Page1(),
     ];
+    /// 下部分的 tabBarView
     return TabBarView(
       children: viewList,
       controller: tabController,

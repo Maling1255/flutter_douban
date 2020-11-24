@@ -60,7 +60,7 @@ class RestartWidget extends StatefulWidget {
 
 class _RestartWidgetState extends State<RestartWidget> {
 
-  //key 唯一的key
+  /// key 唯一的key
   Key key = UniqueKey();
 
   void restartApp() {

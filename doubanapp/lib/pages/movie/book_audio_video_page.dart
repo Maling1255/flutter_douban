@@ -24,8 +24,11 @@ class BookAudioVideoPage extends StatefulWidget {
 
 /// SingleTickerProviderStateMixin
 /// 混入SingleTickerProviderStateMixin，为了传入vsync对象
+/// 用于使用到了一点点的动画效果，因此加入了SingleTickerProviderStateMixin
+/// 将' vsync: this '传递给动画控制器的构造函数
 class _BookAudioVideoPageState extends State<BookAudioVideoPage> with SingleTickerProviderStateMixin{
 
+  // 电影 电视， 综艺 读书
   var tabBar;
 
   @override
@@ -33,19 +36,20 @@ class _BookAudioVideoPageState extends State<BookAudioVideoPage> with SingleTick
     super.initState();
     tabBar = MoviePageTabBar();
     tablist = titleList.map((title) => Text('$title', style: TextStyle(fontSize: 15))).toList();
+
+    ///初始化时创建控制器
+    ///通过 with SingleTickerProviderStateMixin 实现动画效果。
     _tabController = TabController(vsync: this, length: tablist.length);
   }
 
-
   @override
   Widget build(BuildContext context) {
-    /// TODO: 整个container
     return Container(
       color: Colors.white70,
       child: SafeArea(
         /// 横向滚动的tabController
         child: DefaultTabController(
-          initialIndex: 0,
+          initialIndex: 0,  // 默认选中第一个-【电影】
           length: titleList.length,
           child: _getNestedScrollView(tabBar),
         ),
@@ -64,7 +68,7 @@ Widget _getNestedScrollView(Widget tabbar) {
 
       /// 这里返回的数组 就是上部分的 'title' widget
       return <Widget>[
-        /// 将普通widget包装sliver
+        /// 将普通widget包装sliver, 搜索🔍
         SliverToBoxAdapter(
           child: Container(
             color: Colors.white,
@@ -77,7 +81,7 @@ Widget _getNestedScrollView(Widget tabbar) {
             ),
           ),
         ),
-        /// 可以有吸顶的效果
+        /// 可以有吸顶的效果， tabbar
         SliverPersistentHeader(
           pinned: true,
           floating: true,
@@ -93,7 +97,7 @@ Widget _getNestedScrollView(Widget tabbar) {
       ];
     },
 
-      // 底下的FlutterTabBarView 包装下_tabController
+      /// 底下的FlutterTabBarView 包装下_tabController
     body: FlutterTabBarView(
          tabController: _tabController
   ));
