@@ -66,6 +66,7 @@ class _SplashWidgetState extends State<SplashWidget> {
                           padding: const EdgeInsets.only(left: 10.0, right: 10.0, top: 2.0, bottom: 2.0),
                           /// 自定义定时器
                           child: CountDownWidget(
+                            /// 子widget 逆向传值，回调出来
                             onCountDownFinishCallBack: (bool value) {
                               if (value) {
                                 setState(() {

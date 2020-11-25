@@ -107,7 +107,7 @@ class TodayPlayMovieWidget extends StatelessWidget {
   }
 }
 
-
+/// 重叠图片widget
 class TodayLaminatedImage extends StatelessWidget {
 
   List urls;

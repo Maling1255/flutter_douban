@@ -3,12 +3,16 @@ import 'package:doubanapp/bean/movie_top_item_bean.dart';
 import 'package:doubanapp/bean/subject_entity.dart';
 import 'package:doubanapp/constant/color_constant.dart';
 import 'package:doubanapp/pages/movie/movie_hotsoon_tabbar.dart';
+import 'package:doubanapp/pages/movie/movie_rating_bar.dart';
 import 'package:doubanapp/pages/movie/movie_title_wiget.dart';
+import 'package:doubanapp/pages/movie/subject_mark_image_widget.dart';
 import 'package:doubanapp/pages/movie/today_play_movie_widget.dart';
 import 'package:doubanapp/repository/movie_repository.dary.dart';
 import 'package:doubanapp/widgets/part/loading_widget.dart';
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
+
+import 'package:logger/logger.dart';
 
 class MoviePage extends StatefulWidget {
 
@@ -48,7 +52,7 @@ class _MoviePageState extends State<MoviePage> with AutomaticKeepAliveClientMixi
   var hotChildAspectRatio;
   var comingSoonChildAspectRatio;
   int selectIndex = 0;  // 默认选中的热映， 即将上映
-  var itemWidth;
+  var itemWidth;  // item宽度
   var imgSize;
 
   // 今日播放的url
@@ -125,6 +129,7 @@ class _MoviePageState extends State<MoviePage> with AutomaticKeepAliveClientMixi
       var screenWidth = MediaQuery.of(context).size.width;
       imgSize = screenWidth / 5 * 3; // 占屏幕的3/5宽度
       itemWidth = (screenWidth - 30.0 - 20.0) / 3;
+      // 比例
       hotChildAspectRatio = (377.0 / 674.0);
       comingSoonChildAspectRatio = (377.0 / 742.0);
     }
@@ -166,15 +171,143 @@ class _MoviePageState extends State<MoviePage> with AutomaticKeepAliveClientMixi
           SliverToBoxAdapter(
             child: hotSoonTabBarPadding,
           ),
-          /// grid 网格的
-          SliverGrid(delegate: SliverChildBuilderDelegate((BuildContext context, int index){
 
-              return null;
-            }, childCount: math.min(5, 6)),
+          /// grid 网格的item
+          SliverGrid(
+            /// 这里是网格UI部分
+            delegate: SliverChildBuilderDelegate((BuildContext context, int index){
+              var hotMovieBean;
+              var comingSoonBean;
+              if (hotShowBeans.length > 0) {
+                hotMovieBean = hotShowBeans[index];
+              }
+              if (comingSoonBeans.length > 0) {
+                comingSoonBean = comingSoonBeans[index];
+              }
+              return Stack(
+                children: <Widget>[
+                  // 热映
+                  Offstage(
+                    offstage: selectIndex == 1 && comingSoonBeans != null,
+                    child: _getHotShowItem(hotMovieBean, itemWidth),
+                  ),
+                  // 即将上映
+                  Offstage(
+                    offstage: selectIndex == 0 && hotShowBeans != null,
+                    child: _getCommingSoonItem(comingSoonBean, itemWidth),
+                  ),
+                ],
+              );
+
+            }, childCount: math.min(selectIndex == 0 ? hotShowBeans.length : comingSoonBeans.length, 6)),
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              /// 配置交叉轴方向数据配置
+              // 3列
+              crossAxisCount: 3,
+              // 纵向间距
+              crossAxisSpacing: 10.0,
+              // 横向间距
+              mainAxisSpacing: 5.0,
+              // 宽高比例，主轴方向 ：交叉轴方向
+              childAspectRatio: selectIndex == 0 ? hotChildAspectRatio : comingSoonChildAspectRatio,  // 宽高比例
+            ),
           ),
 
         ],
       ),
+    );
+  }
+
+  // 影院热映
+  Widget _getHotShowItem(Subject hotBean, var width) {
+    if (hotBean == null) {
+        return Text('hotBean_空的', style: TextStyle(fontSize: 14, color: Colors.red));
+    }
+    return GestureDetector(
+      child: Column(
+        children: <Widget>[
+          SubjectMarkImageWidget(hotBean.images.large, width:width),
+          Padding(
+            padding: EdgeInsets.only(top: 5),
+            child: Container(
+              width: double.infinity,
+              child: Text(
+                hotBean.title,
+                /// 文本只显示一行
+                softWrap: false,
+                /// 多行文本渐隐方式
+                overflow: TextOverflow.fade,
+                style: TextStyle(color: Colors.black, fontSize: 13, fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+          /// 评分 星星✨
+          MovieRatingBar(hotBean.rating.average, size: 12.0,),
+        ],
+      ),
+      onTap: (){
+        Logger().i('点击跳转。。。');
+      },
+    );
+  }
+
+  // 即将上映
+  Widget _getCommingSoonItem(Subject soonBean, var width) {
+    if (soonBean == null) {
+      return Text('soonBean_空的', style: TextStyle(fontSize: 14, color: Colors.red));
+    }
+
+    /// 时间转换  将2019-02-14转成02月04日
+    String mainland_pubdate = soonBean.mainland_pubdate;
+    // 02-14
+    mainland_pubdate = mainland_pubdate.substring(5, mainland_pubdate.length);  // 截取字符串到末尾的位置index
+    // 02月04日
+    mainland_pubdate = mainland_pubdate.replaceFirst(RegExp(r'-'), '月') + '日';
+
+    return   GestureDetector(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          SubjectMarkImageWidget(soonBean.images.large, width:width),
+          Padding(
+            padding: EdgeInsets.only(top: 5),
+            child: Container(
+              width: double.infinity,
+              child: Text(
+                soonBean.title,
+                /// 文本只显示一行
+                softWrap: false,
+                /// 多行文本渐隐方式
+                overflow: TextOverflow.fade,
+                style: TextStyle(color: Colors.black, fontSize: 13, fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+
+          // 底部的时间
+          Container(
+            margin: EdgeInsets.only(top: 7),
+            child: Padding(
+              padding: EdgeInsets.only(left: 5, right: 5),
+              child: Text(mainland_pubdate, style: TextStyle(fontSize: 8.0, color: ColorConstant.colorRed277)),
+            ),
+            /// 设置边框的形状装饰
+            decoration: ShapeDecoration(
+              color: Colors.white,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(2.0),
+                side: BorderSide(color: ColorConstant.colorRed277),
+              ),
+            ),
+
+          ),
+
+
+        ],
+      ),
+      onTap: (){
+        Logger().i('点击跳转。。。');
+      },
     );
   }
 

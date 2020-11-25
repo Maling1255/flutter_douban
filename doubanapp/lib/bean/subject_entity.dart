@@ -73,8 +73,9 @@ class Images {
   Images(this.small, this.large, this.medium);
 }
 
+/// 评分 星星
 class Rating {
-  var average;
+  var average;  // 平均值 double
   var max;
   Rating(this.average, this.max);
 }

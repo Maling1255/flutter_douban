@@ -1,3 +1,4 @@
+import 'package:doubanapp/constant/constant.dart';
 import 'package:doubanapp/pages/home/home_page.dart';
 import 'package:doubanapp/pages/movie/book_audio_video_page.dart';
 import 'package:flutter/material.dart';
@@ -35,13 +36,9 @@ class _ContainerPageState extends State<ContainerPage> {
     super.initState();
     
     if (pages == null) {
-        pages = [HomePage(), BookAudioVideoPage(), Stack(
-          children: <Widget>[
-            Container(
-              color: Colors.blue,
-            ),
-          ],
-        ), HomePage(), HomePage()];
+        pages = [HomePage(), BookAudioVideoPage(),HomePage(),
+
+          HomePage(), HomePage()];
     }
 
     if (bottomNavigationBarItemList == null) {
