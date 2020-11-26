@@ -1,4 +1,5 @@
 import 'package:doubanapp/constant/constant.dart';
+import 'package:doubanapp/group/group_page.dart';
 import 'package:doubanapp/pages/home/home_page.dart';
 import 'package:doubanapp/pages/movie/book_audio_video_page.dart';
 import 'package:flutter/material.dart';
@@ -36,8 +37,10 @@ class _ContainerPageState extends State<ContainerPage> {
     super.initState();
     
     if (pages == null) {
-        pages = [HomePage(), BookAudioVideoPage(),HomePage(),
-
+        pages = [
+          HomePage(),
+          BookAudioVideoPage(),
+          GroupPage(),
           HomePage(), HomePage()];
     }
 

@@ -2,17 +2,23 @@
 import 'package:doubanapp/bean/movie_top_item_bean.dart';
 import 'package:doubanapp/bean/subject_entity.dart';
 import 'package:doubanapp/constant/color_constant.dart';
+import 'package:doubanapp/constant/constant.dart';
 import 'package:doubanapp/pages/movie/movie_hotsoon_tabbar.dart';
 import 'package:doubanapp/pages/movie/movie_rating_bar.dart';
 import 'package:doubanapp/pages/movie/movie_title_wiget.dart';
 import 'package:doubanapp/pages/movie/subject_mark_image_widget.dart';
 import 'package:doubanapp/pages/movie/today_play_movie_widget.dart';
+import 'package:doubanapp/pages/movie/top_item_widget.dart';
 import 'package:doubanapp/repository/movie_repository.dary.dart';
+import 'package:doubanapp/widgets/image/cache_img_radius.dart';
+import 'package:doubanapp/widgets/part/item_count_title.dart';
 import 'package:doubanapp/widgets/part/loading_widget.dart';
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 
 import 'package:logger/logger.dart';
+
+typedef OnTap = void Function();
 
 class MoviePage extends StatefulWidget {
 
@@ -42,7 +48,7 @@ class _MoviePageState extends State<MoviePage> with AutomaticKeepAliveClientMixi
   List<Subject> hotShowBeans = List();
   // 即将上映
   List<Subject> comingSoonBeans = List();
-  // 豆瓣榜单
+  // 豆瓣热映
   List<Subject> hotBeans;
   // 一周口碑电影榜
   List<SubjectEntity> weeklyBeans;
@@ -60,7 +66,7 @@ class _MoviePageState extends State<MoviePage> with AutomaticKeepAliveClientMixi
   // 今日播放的背景颜色
   Color todayPlayBackgroundColor = Color.fromARGB(255, 47, 22, 74);
 
-  // 周排行   周热门  周前250
+  // 一周排行   一周热门  一周前250
   MovieTopItemBean weeklyTopBean, weeklyHotBean, weeklyTop250Bean;
   Color weeklyTopColor, weeklyHotColor, weeklyTop250Color, todayPlayBgColor;
 
@@ -213,6 +219,64 @@ class _MoviePageState extends State<MoviePage> with AutomaticKeepAliveClientMixi
             ),
           ),
 
+          // 圆角横屏的图片 banner
+          getSliverCommonImg(Constant.IMG_TMP1, () {
+            Logger().i('横屏banner图片点击');
+          }),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: EdgeInsets.only(top: 20, bottom: 15.0),
+              child: ItemCountTitle('豆瓣热门', count: hotBeans == null ? 0 : hotBeans.length, fontSize: 13, onTap: () {
+                Logger().i('豆瓣热门点击全部');
+              },),
+            ),
+          ),
+          /// 热映grid
+          getCommonSliverGrid(hotBeans),
+
+          /// 2018 banner
+          getSliverCommonImg(Constant.IMG_TMP2, () {
+            Logger().i('2018横屏banner图片点击');
+          }),
+
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: EdgeInsets.only(top: 20, bottom: 15.0),
+              child: ItemCountTitle('豆瓣榜单', count: hotBeans == null ? 0 : hotBeans.length, onTap: () {
+                Logger().i('豆瓣榜单点击全部');
+              },),
+            ),
+          ),
+
+          // 底部的横向滚动
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: EdgeInsets.only(bottom: 10),
+              child: Container(
+                height: imgSize,
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  children: <Widget>[
+                    TopItemWidget(
+                      title: '一周口碑电影榜',
+                      bean: weeklyTopBean,
+                      partColor: weeklyTopColor,
+                    ),
+                    TopItemWidget(
+                      title: '一周热门排行榜',
+                      bean: weeklyHotBean,
+                      partColor: weeklyHotColor,
+                    ),
+                    TopItemWidget(
+                      title: '豆瓣电影 Top250',
+                      bean: weeklyTop250Bean,
+                      partColor: weeklyTop250Color,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -266,6 +330,7 @@ class _MoviePageState extends State<MoviePage> with AutomaticKeepAliveClientMixi
 
     return   GestureDetector(
       child: Column(
+        /// 交叉轴从左侧开始布局
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           SubjectMarkImageWidget(soonBean.images.large, width:width),
@@ -283,7 +348,6 @@ class _MoviePageState extends State<MoviePage> with AutomaticKeepAliveClientMixi
               ),
             ),
           ),
-
           // 底部的时间
           Container(
             margin: EdgeInsets.only(top: 7),
@@ -299,10 +363,7 @@ class _MoviePageState extends State<MoviePage> with AutomaticKeepAliveClientMixi
                 side: BorderSide(color: ColorConstant.colorRed277),
               ),
             ),
-
           ),
-
-
         ],
       ),
       onTap: (){
@@ -311,5 +372,46 @@ class _MoviePageState extends State<MoviePage> with AutomaticKeepAliveClientMixi
     );
   }
 
+  /// 圆角图片
+  getSliverCommonImg(String url, OnTap onTap) {
+    return SliverToBoxAdapter(
+      child: Padding(
+        padding: EdgeInsets.only(top: 10),
+        child: CacheImgRadius(
+          imgUrl: url,
+          radius: 5.0,
+          ontap: () {
+            if (onTap != null) {
+              onTap();
+            }
+          },
+        ),
+      ),
+    );
+  }
+
+  ///图片+订阅+名称+星标
+  SliverGrid getCommonSliverGrid(List<Subject> hotBeans) {
+    return SliverGrid(
+        delegate: SliverChildBuilderDelegate((BuildContext context, int index) {
+          if (hotBeans == null) {
+              return Container();
+          }
+          return _getHotShowItem(hotBeans[index], itemWidth);
+        }, childCount: () {
+          if (hotBeans?.length != null) {
+              return hotBeans.length;
+          }
+          return 6;
+        }()),
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 3,
+            crossAxisSpacing: 10.0,
+            mainAxisSpacing: 0.0,
+            childAspectRatio: hotChildAspectRatio)
+    );
+  }
 
 }
+
+

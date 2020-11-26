@@ -34,4 +34,21 @@ class LoadingWidget {
     );
   }
 
+  // 包装一下 body & 加载框
+  static Widget ContainerLoadingBody(Widget body, {bool isloading = true, Color backgroundColor, Color loadingBackgroundColor}) {
+    return Stack(
+      children: <Widget>[
+        body,
+        /// 隐藏widget  offstage: true 隐藏， false 显示
+        Offstage(
+          offstage: !isloading,
+          child: getLoading(
+            backgroundColor: backgroundColor,
+            loadingBackgroundColor: loadingBackgroundColor,
+          ),
+        ),
+      ],
+    );
+  }
+
 }

@@ -84,23 +84,25 @@ class MovieRepository {
     resultList = result['subjects'];
     hotBeans = resultList.map<Subject>((info) => Subject.fromMap(info)).toList();
 
-    // 一周热门电影榜
+
+    // 2 一周热门电影榜
     weeklyHotBean = MovieTopItemBean.convertHotBeans(hotBeans);
     /// PaletteGenerator 从图片提取色的库
     var paletteGenertor = await PaletteGenerator.fromImageProvider(NetworkImage(hotBeans[0].images.medium));
     if (paletteGenertor != null && paletteGenertor.colors.isNotEmpty) {
-        weeklyTopColor = paletteGenertor.colors.toList()[0];
+      weeklyHotColor = paletteGenertor.colors.toList()[0];
     }
 
-    // 一周口碑电影榜
+
+    // 1 一周口碑电影榜
     result = await _request.get(API.WEEKLY);
     resultList = result['subjects'];
     weeklyBeans = resultList.map<SubjectEntity>((item) => SubjectEntity.fromMap(item)).toList();
     weeklyTopBean = MovieTopItemBean.convertWeeklyBeans(weeklyBeans);
-    paletteGenertor = await PaletteGenerator.fromImageProvider(
-        NetworkImage(weeklyBeans[0].subject.images.medium));
+    /// PaletteGenerator 从图片提取色的库
+    paletteGenertor = await PaletteGenerator.fromImageProvider(NetworkImage(weeklyBeans[0].subject.images.medium));
     if (paletteGenertor != null && paletteGenertor.colors.isNotEmpty) {
-      weeklyTopColor = (paletteGenertor.colors.toList()[0]);
+      weeklyTopColor = (paletteGenertor.colors.toList()[1]);
     }
 
     // 今日可播放电影
@@ -123,18 +125,17 @@ class MovieRepository {
       todayPlayBgColor = (paletteGenertor.colors.toList()[0]);
     }
 
-    // 豆瓣TOP250
+    // 3 豆瓣TOP250
     if (useNetData) {
       result = await _request.get(API.TOP_250 + '?start=0&count=5&apikey=0b2bdeda43b5688921839c8ecb20399b');
     } else {
       result = await _request.get(API.TOP_250);
     }
     resultList = result['subjects'];
-    top250Beans =
-        resultList.map<Subject>((item) => Subject.fromMap(item)).toList();
+    top250Beans = resultList.map<Subject>((item) => Subject.fromMap(item)).toList();
     weeklyTop250Bean = MovieTopItemBean.convertTopBeans(top250Beans);
-    paletteGenertor = await PaletteGenerator.fromImageProvider(
-        NetworkImage(top250Beans[0].images.medium));
+    /// PaletteGenerator 从图片提取色的库
+    paletteGenertor = await PaletteGenerator.fromImageProvider(NetworkImage(top250Beans[0].images.medium));
     if (paletteGenertor != null && paletteGenertor.colors.isNotEmpty) {
       weeklyTop250Color = (paletteGenertor.colors.toList()[0]);
     }

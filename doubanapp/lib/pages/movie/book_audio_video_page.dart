@@ -105,6 +105,7 @@ Widget _getNestedScrollView(Widget tabbar) {
 
 // -------------------------------------------------------------------------------  _SliverAppBarDelegate
 
+/// 可以有吸顶的效果
 /// 自定义 重写build() 、 get maxExtent 、 get minExtent 和 shouldRebuild() 这四个方法
 /// maxExtent 表示header完全展开时的高度， minExtent 表示header在收起时的最小高度
 /// 因此，对于我们上面的那个自定义Delegate，如果将 minHeight 和 maxHeight 的值设置为相同时，header就不会收缩了

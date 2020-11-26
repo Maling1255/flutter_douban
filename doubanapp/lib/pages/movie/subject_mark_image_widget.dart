@@ -18,12 +18,14 @@ class SubjectMarkImageWidget extends StatefulWidget {
   /// 1. InheritedWidget （依赖父子widget, 父 -> 子）
   /// 2. notification  依赖父子widget, 子 -> 父）
   /// 3. EventBus   🙅不依赖父子widget 实现跨组件传值
-  SubjectMarkImageWidget(this.imgNetUrl, {Key key, this.markAddCallBack, this.width = 150}) : super(key: key);
+  SubjectMarkImageWidget(this.imgNetUrl, {Key key, this.markAddCallBack, this.width = 150, this.height}) : super(key: key);
 
   @override
   _SubjectMarkImageWidgetState createState() {
-   height = this.width / 150 * 210;
-    return _SubjectMarkImageWidgetState(imgNetUrl, markAddCallBack, width, height);
+    if (this.height == null) {
+      this.height = this.width / 150 * 210;
+    }
+    return _SubjectMarkImageWidgetState(imgNetUrl, markAddCallBack, width, this.height);
   }
 }
 
@@ -55,7 +57,9 @@ class _SubjectMarkImageWidgetState extends State<SubjectMarkImageWidget>  {
         width: width,
         height: height,
         fit: BoxFit.fill,
+        /// 占位图
         placeholder: (BuildContext context, String url){
+
           return defaultImg;
         },
         fadeInDuration: const Duration(milliseconds: 80),
