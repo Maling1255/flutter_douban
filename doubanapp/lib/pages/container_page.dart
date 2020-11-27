@@ -101,6 +101,10 @@ class _ContainerPageState extends State<ContainerPage> {
           /// 这里根据点击的index来显示，非index的page都要隐藏
           setState(() {
             _bottomBarSelectIndex = index;
+
+            /// 这里隐藏 webview
+            _shopPage.setShowState(pages.indexOf(_shopPage) == _bottomBarSelectIndex);
+
           });
         },
         // 图片大小

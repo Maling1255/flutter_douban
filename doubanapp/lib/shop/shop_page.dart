@@ -18,6 +18,7 @@ bool _isShow = true;
 /// 市集 市集使用两个webView代替，因为豆瓣中 这个就是WebView
 class ShopPage extends StatelessWidget {
 
+  /// 外面选中 如果不是webview 页面 就要隐藏webview
   void setShowState(bool isShow) {
     _isShow = isShow;
     if(!isShow){
