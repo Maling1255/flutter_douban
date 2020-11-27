@@ -2,6 +2,7 @@ import 'package:doubanapp/constant/constant.dart';
 import 'package:doubanapp/group/group_page.dart';
 import 'package:doubanapp/pages/home/home_page.dart';
 import 'package:doubanapp/pages/movie/book_audio_video_page.dart';
+import 'package:doubanapp/shop/shop_page.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 
@@ -32,16 +33,20 @@ class _ContainerPageState extends State<ContainerPage> {
     _Item('我的', 'assets/images/ic_tab_profile_active.png', 'assets/images/ic_tab_profile_normal.png')
   ];
 
+  final ShopPage _shopPage  = ShopPage();
+
   @override
   void initState() {
     super.initState();
-    
+
+     ShopPage();
     if (pages == null) {
         pages = [
           HomePage(),
           BookAudioVideoPage(),
           GroupPage(),
-          HomePage(), HomePage()];
+          _shopPage,
+          HomePage()];
     }
 
     if (bottomNavigationBarItemList == null) {
@@ -60,7 +65,10 @@ class _ContainerPageState extends State<ContainerPage> {
   Widget _getPagesWidget(int index) {
     return Offstage(
       offstage: _bottomBarSelectIndex != index,  // false 显示， true 隐藏
-      child: TickerMode(  /// 创建一个启用或禁用窗口部件
+
+      /// TickerMode 可用于禁用子树中的动画
+      // 所以作用是控制子控件是否显示动画
+      child: TickerMode(
         enabled: _bottomBarSelectIndex == index,
         child: pages[index],
       ),

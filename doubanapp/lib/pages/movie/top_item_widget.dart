@@ -85,8 +85,51 @@ class TopItemWidget extends StatelessWidget {
               ),
             ),
           ),
+
+          // 底部列表
+          Positioned(
+            top: _imgSize / 2 - 2,
+            child: Padding(
+              padding: EdgeInsets.only(top: 10, left: 10),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: _getChildren(bean.items),
+              ),
+            ),
+          ),
         ],
       ),
     );
   }
+
+  // 列表
+  List<Widget> _getChildren(List<MovieItem> items) {
+    List<Widget> list = [];
+    for (var i = 0; i < items.length; ++i) {
+      var item = items[i];
+      list.add(_getItem(item, i));
+    }
+    return list;
+  }
+
+  Widget _getItem(MovieItem item, int i) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: <Widget>[
+        Padding(
+          padding: EdgeInsets.only(right: 5, bottom: 5),
+          child: Text(
+            '$i.${item.title}',
+            style: TextStyle(
+              fontSize: 13,
+              color: Colors.white,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
 }

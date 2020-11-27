@@ -22,7 +22,21 @@ class _SplashWidgetState extends State<SplashWidget> {
   Widget build(BuildContext context) {
     return Stack(
       children: <Widget>[
-        ///Offstage 控制是否显示组件  offstage true隐藏不显示  false 显示
+        /// Offstage 控制是否显示组件  offstage true隐藏不显示  false 显示
+        /// Visibility 也能控制显示或者隐藏
+        /// Visibility({
+        // Key key,
+        // @required this.child,
+        // this.replacement = const SizedBox.shrink(), //用于替换的Widget，如果不复写那么就是默认空的SizedBox
+        // this.visible = true, //控制child 是否可见，当为false的时候显示replacement
+        // this.maintainState = false,  //是否在不可见的情况下维护Widgetstate
+        // this.maintainAnimation = false, //是否在widget不可见时保持动画
+        // this.maintainSize = false,// 是否预留位置
+        // this.maintainSemantics = false,// 可访问性
+        // this.maintainInteractivity = false, // 是否在隐藏时维持交互
+        // }
+        /// Offstage是控制组件隐藏/可见的组件，如果感觉有些单调功能不全，我们可以使用Visibility，
+        /// Visibility也是控制子组件隐藏/可见的组件。不同是的Visibility有隐藏状态是否留有空间、隐藏状态下是否可调用等功能。
         Offstage(
           child: containerPage,
           offstage: showAd,

@@ -17,6 +17,7 @@ class SubjectEntity {
 
 
 class Subject {
+  // 记录选中， 和非选中
   bool tag = false;
   Rating rating;
   var genres;

@@ -1,5 +1,6 @@
 
 import 'package:doubanapp/bean/subject_entity.dart';
+import 'package:doubanapp/constant/color_constant.dart';
 import 'package:doubanapp/constant/constant.dart';
 import 'package:doubanapp/request/API.dart';
 import 'package:doubanapp/request/http_request.dart';
@@ -8,6 +9,7 @@ import 'package:doubanapp/widgets/image/radius_img.dart';
 import 'package:doubanapp/widgets/part/loading_widget.dart';
 import 'package:doubanapp/widgets/part/search_text_field_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:logger/logger.dart';
 
 class GroupPage extends StatelessWidget {
@@ -84,9 +86,12 @@ class _GroupWidgetState extends State<GroupWidget> {
     return ListView.builder(
       physics: BouncingScrollPhysics(),
       itemBuilder: (BuildContext context, int index) {
-        return _getItem(list[index], index);
+        return Padding(
+          padding: EdgeInsets.only(left: 6, top: 13, right: Constant.MARGIN_RIGHT),
+          child:  _getItem(list[index], index),
+        );
       },
-      itemCount: 10,
+      itemCount: list.length - 1,
     );
 
   }
@@ -99,16 +104,14 @@ class _GroupWidgetState extends State<GroupWidget> {
           RadiusImg.get(bean.images.small, 50.0, radius: 3.0),
           Expanded(
             child: Container(
+              padding: EdgeInsets.symmetric(),
+              // color: ColorConstant.randomColor(),
               alignment: Alignment.topLeft,
               margin: const EdgeInsets.only(left: 5.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Text(
-                    bean.title,
-                    style:
-                    TextStyle(fontSize: 17.0, fontWeight: FontWeight.bold),
-                  ),
+                  Text(bean.title, style: TextStyle(fontSize: 17.0, fontWeight: FontWeight.bold)),
                   Text(bean.pubdates != null ? bean.pubdates[0] : '', style: TextStyle(fontSize: 13.0))
                 ],
               ),
@@ -120,10 +123,7 @@ class _GroupWidgetState extends State<GroupWidget> {
           ),
           GestureDetector(
             child: Image.asset(
-              Constant.ASSETS_IMG +
-                  (list[index].tag
-                      ? 'ic_group_checked_anonymous.png'
-                      : 'ic_group_check_anonymous.png'),
+              Constant.ASSETS_IMG + (list[index].tag ? 'ic_group_checked_anonymous.png' : 'ic_group_check_anonymous.png'),
               width: 25.0,
               height: 25.0,
             ),
@@ -135,6 +135,20 @@ class _GroupWidgetState extends State<GroupWidget> {
           )
         ],
       ),
+      onTap: () {
+        Logger().i('点击了 $index.${bean.title}   >> 去查看详情');
+
+        /// toast弹框
+        Fluttertoast.showToast(
+          msg: '$index.${bean.title}',
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIos: 1,
+          backgroundColor: Color(0xFF333333),
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+      },
     );
   }
 
