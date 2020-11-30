@@ -163,6 +163,8 @@ class _MoviePageState extends State<MoviePage> with AutomaticKeepAliveClientMixi
         /// PageScrollPhysics  用于PageView的滚动特性，停留在页面的边界(分页滚动的), 一页一页的列表滑动，一般用于PageView控件用的滑动效果，滑动到末尾会有比较大的弹起
         physics: BouncingScrollPhysics(),
         /// 是否根据子widget的总长度来设置ListView的长度
+        /// shrinkWrap: true 则是只满足自身大小
+        /// shrinkWrap: false  填充满父组件给的空间大小
         shrinkWrap: true,
         slivers: <Widget>[
           // 包装sliver, 找电影， 豆瓣榜单， 豆瓣菜， 豆瓣片单

@@ -42,6 +42,10 @@ class MyApp extends StatelessWidget {
   }
 }
 
+
+
+///这个组件用来重新加载整个child Widget的。当我们需要重启APP的时候，可以使用这个方案
+///https://stackoverflow.com/questions/50115311/flutter-how-to-force-an-application-restart-in-production-mode
 class RestartWidget extends StatefulWidget {
   final Widget child;
 
@@ -68,6 +72,26 @@ class _RestartWidgetState extends State<RestartWidget> {
       key = UniqueKey();  // 重新获取唯一的key
     });
   }
+
+  /// 另外还有 GlobalKey， 能够跨 Widget 访问状态
+  /// PageStorageKey 能够保存页面存储状态的key
+  /// UniqueKey 唯一的key
+  ///
+  // 1. Key
+  // Key 默认是使用 ValueKey
+  // Key 有两个子类 LocalKey 和 GlobalKey
+  //
+  // 2. LocalKey
+  //
+  // LocalKey 的用途是同一个父 Widget 下的所有子 Widget 进行比较。比如上文提到的例子。
+  // Localkey 有三个子类
+  //
+  // ValueKey：以一个值作为 Key
+  // ObjectKey：以一个对象作为 Key。当多个值才能唯一标识的时候，将这多个值组合成一个对象。比如【学校 + 学号】才能唯一标识一个学生。
+  // UniqueKey：生成唯一随机数（对象的 Hash 值）作为 Key。注意：如果直接在控件构建的时候生成，那么每次构建都会生成不同的 Key。
+  // Valuekey 有个子类：PageStorageKey，专门用于存储页面滚动位置。
+
+
 
   @override
   Widget build(BuildContext context) {

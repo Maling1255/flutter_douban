@@ -15,6 +15,7 @@ const double _kTextAndIconTabHeight = 42.0;
 class HomeTabBar extends StatefulWidget implements PreferredSizeWidget {
 
   final TabBar tabBar;
+  /// 是一个过度值， 跟随者滚动变化的值
   final double translate;
 
   HomeTabBar({Key key, this.tabBar, this.translate}) : super(key: key);
@@ -46,8 +47,12 @@ class _HomeTabBarState extends State<HomeTabBar> {
     var value = ScreenUtils.screenW(context) * 0.75 - 10.0;
     return Stack(
       children: <Widget>[
-        Align(
-          alignment: Alignment(-0.88, -0.1),
+        Positioned(
+          // alignment: Alignment(-0.88, -0.1),
+          ///搜索框
+          left: 15.0,
+          right: value,
+          top: getTop(widget.translate),   // 动画指定top
           /// 包装渐隐动画
           child: getOpacityWidget(Container(
             width: 80,

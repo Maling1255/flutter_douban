@@ -10,6 +10,7 @@ import 'package:doubanapp/widgets/part/video_widget.dart';
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 import 'package:doubanapp/pages/home/home_app_bar.dart' as myApp;
+import 'package:fluttertoast/fluttertoast.dart';
 
 import 'package:logger/logger.dart';
 
@@ -286,7 +287,7 @@ class _SliverContainerState extends State<SliverContainer> {
           // 底部功能键
 
         Padding(
-              padding: const EdgeInsets.only(left: 15.0, right: 15.0),
+              padding: const EdgeInsets.only(left: 15.0, right: 15.0, top: 10),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
@@ -316,6 +317,7 @@ class _SliverContainerState extends State<SliverContainer> {
     );
   }
 
+  // 中间video
   _getContentVideo(int index) {
     /// mounted 是 bool 类型，表示当前 State 是否加载到树⾥。
     /// 常用于判断页面是否释放。
@@ -330,23 +332,66 @@ class _SliverContainerState extends State<SliverContainer> {
     );
   }
 
+
+  // 中间图片
   _getContentItemCenterImage(Subject item) {
     return Row(
       /// 环绕模式
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: <Widget>[
         Expanded(
-          child: RadiusImg.get(item.images.large, null, shape:RoundedRectangleBorder(
-            borderRadius: BorderRadius.only(topLeft: Radius.circular(5.0), bottomLeft: Radius.circular(5.0)),
-          )),
+          child: GestureDetector(
+            child: RadiusImg.get(item.images.large, null, shape:RoundedRectangleBorder(
+              borderRadius: BorderRadius.only(topLeft: Radius.circular(5.0), bottomLeft: Radius.circular(5.0)),
+            )),
+            onTap: () {
+              Fluttertoast.showToast(msg: '去点击二，三张图');
+            },
+          ),
+        ),
+
+
+        Expanded(
+          /// Hero 可以预览大图
+          child: GestureDetector(
+            child: Hero(
+              tag: item.casts[1].avatars.medium,
+              child: RadiusImg.get(item.casts[1].avatars.medium, null, radius: 0.0),
+            ),
+            onTap: () {
+              Navigator.of(context).push(PageRouteBuilder(pageBuilder: (ctx, animation, animation2) {
+                return FadeTransition(
+                  opacity: animation,
+                  child: _ImageDetail(item.casts[1].avatars.medium),
+                );
+              }
+              ));
+            },
+          ),
+
+          // child: RadiusImg.get(item.casts[1].avatars.medium, null, radius: 0.0),
         ),
         Expanded(
-          child: RadiusImg.get(item.casts[1].avatars.medium, null, radius: 0.0),
-        ),
-        Expanded(
-          child: RadiusImg.get(item.casts[2].avatars.medium, null, shape:RoundedRectangleBorder(
-            borderRadius: BorderRadius.only(topRight: Radius.circular(5.0), bottomRight: Radius.circular(5.0)),
-          )),
+          /// Hero 可以预览大图
+          child: GestureDetector(
+            child: Hero(
+              tag: item.casts[2].avatars.medium,
+              child:  RadiusImg.get(item.casts[2].avatars.medium, null, shape:RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(topRight: Radius.circular(5.0), bottomRight: Radius.circular(5.0)),
+              )),
+            ),
+          onTap: () {
+            Navigator.of(context).push(PageRouteBuilder(pageBuilder: (ctx, animation, animation2) {
+              return FadeTransition(
+                opacity: animation,
+                child: _ImageDetail(item.casts[2].avatars.medium),
+              );
+            }));
+          },
+          // child: RadiusImg.get(item.casts[2].avatars.medium, null, shape:RoundedRectangleBorder(
+          //   borderRadius: BorderRadius.only(topRight: Radius.circular(5.0), bottomRight: Radius.circular(5.0)),
+          // )),
+          )
         ),
       ],
     );
@@ -383,4 +428,35 @@ _loginContainer(BuildContext context) {
       ],
     ),
   );
+}
+
+
+
+
+/// --------------   预览大图
+class _ImageDetail extends StatelessWidget {
+  final String imageURL;
+
+  _ImageDetail(this.imageURL);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: Center(
+        child: GestureDetector(
+            onTap: () {
+              Navigator.of(context).pop();
+            },
+            child: Hero(
+              tag: imageURL,
+              child: Image.network(
+                this.imageURL,
+                width: double.infinity,
+                fit: BoxFit.cover,
+              ),
+            )),
+      ),
+    );
+  }
 }

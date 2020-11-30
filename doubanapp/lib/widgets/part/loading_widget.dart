@@ -27,7 +27,7 @@ class LoadingWidget {
         width: 70.0,
         alignment: Alignment.center,
         child: SizedBox(  // 菊花
-          /// 加载的菊花加载
+          /// 加载的菊花加载， iOS风格的菊花
           child: CupertinoActivityIndicator(radius: 15.0),
         ),
       ),

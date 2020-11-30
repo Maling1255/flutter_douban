@@ -58,6 +58,9 @@ dependencies:
   # 屏幕属性相关的  https://github.com/OpenFlutter/flutter_screenutil/blob/master/README_CN.md
 #  flutter_screenutil: ^3.1.0
 
+
+
+## dependencies 下的所有依赖会编译到项目中，而 dev_dependencies 仅仅是运行期间的包
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -71,6 +74,7 @@ flutter:
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
+  # 确保您的应用程序中包含Material Icons字体，以便您可以使用material Icons类中的图标
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
@@ -91,6 +95,7 @@ flutter:
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
   # example:
+  # 配置字体
   # fonts:
   #   - family: Schyler
   #     fonts:

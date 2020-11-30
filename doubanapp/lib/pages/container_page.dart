@@ -2,6 +2,7 @@ import 'package:doubanapp/constant/constant.dart';
 import 'package:doubanapp/group/group_page.dart';
 import 'package:doubanapp/pages/home/home_page.dart';
 import 'package:doubanapp/pages/movie/book_audio_video_page.dart';
+import 'package:doubanapp/pages/person/person_center_page.dart';
 import 'package:doubanapp/shop/shop_page.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
@@ -46,7 +47,7 @@ class _ContainerPageState extends State<ContainerPage> {
           BookAudioVideoPage(),
           GroupPage(),
           _shopPage,
-          HomePage()];
+          PersonCenterPage()];
     }
 
     if (bottomNavigationBarItemList == null) {
